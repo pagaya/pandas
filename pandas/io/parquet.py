@@ -4,8 +4,7 @@ from distutils.version import LooseVersion
 from io import BytesIO
 from warnings import catch_warnings
 
-from boto3 import client
-from s3transfer import TransferConfig
+import boto3
 
 from pandas.compat import string_types
 from pandas.errors import AbstractMethodError
@@ -270,11 +269,11 @@ def concurrent_read(path, **kwargs):
     max_concurrency = kwargs.get('max_concurrency', 10)
     bucket, key = split_s3_path(path)
     stream = BytesIO()
-    client('s3').download_fileobj(
+    boto3.client('s3').download_fileobj(
         Bucket=bucket,
         Key=key,
         Fileobj=stream,
-        Config=TransferConfig(max_concurrency)
+        Config=boto3.s3.transfer.TransferConfig(max_concurrency)
     )
     return stream
 
